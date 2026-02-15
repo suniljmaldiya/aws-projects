@@ -1,4 +1,3 @@
-# aws-projects
 AUTOMATED CLOUD THREAT DETECTION & INCIDENT RESPONSE USING AWS GUARDDUTY
 PROJECT NAME
 
@@ -64,55 +63,84 @@ Lambda performs automatic remediation actions
 Logs are stored for auditing and analysis
 
 IMPLEMENTATION STEPS
-
 STEP 1: ENABLE AWS GUARDDUTY
+
 Login to AWS Management Console
+
 Navigate to AWS GuardDuty
+
 Click on "Enable GuardDuty"
+
 Keep default settings
+
 GuardDuty starts monitoring immediately.
 
 STEP 2: CREATE SNS TOPIC FOR ALERTS
+
 Open Amazon SNS
+
 Create a Topic
+
 Topic Name: guard-duty-alert
+
 Create a Subscription
+
 Protocol: Email
+
 Endpoint: Your email address
+
 Confirm the subscription from email
+
 This SNS topic is used for security alerts.
 
 STEP 3: CREATE IAM ROLE FOR LAMBDA
+
 Create an IAM role with the following permissions:
+
 AWSLambdaBasicExecutionRole
+
 AmazonSNSFullAccess
+
 AmazonEC2FullAccess
+
 IAMFullAccess
+
 This role allows Lambda to:
+
 Send alerts
+
 Stop EC2 instances
+
 Disable IAM users
+
 Write logs to CloudWatch
 
 STEP 4: CREATE LAMBDA FUNCTION
+
 Open AWS Lambda
+
 Click "Create Function"
+
 Function Name: guardduty_auto_response
+
 Runtime: Python 3.10
+
 Execution Role: Use the IAM role created above
 
 STEP 5: ADD LAMBDA FUNCTION CODE
+
 Copy and paste the following code into the Lambda function:
 
 ---------------- LAMBDA CODE START ----------------
 
 import json
 import boto3
+
 sns = boto3.client('sns')
 ec2 = boto3.client('ec2')
 iam = boto3.client('iam')
 
-SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:564686557579:guard-duty-alert"
+SNS_TOPIC_ARN = "arn:aws:sns:us-east-1:564686914705:guard-duty-alert"
 
 def lambda_handler(event, context):
 
@@ -176,14 +204,20 @@ return {
 ---------------- LAMBDA CODE END ----------------
 
 STEP 6: CREATE EVENTBRIDGE RULE
+
 Go to Amazon EventBridge
+
 Create a Rule
+
 Rule Name: guardduty-event-rule
+
 Event Pattern:
 {
 "source": ["aws.guardduty"]
 }
+
 Target: AWS Lambda
+
 Select Lambda function: guardduty_auto_response
 
 This rule triggers Lambda whenever GuardDuty detects a threat.
